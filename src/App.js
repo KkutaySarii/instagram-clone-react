@@ -1,7 +1,13 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { Input } from "./components/Input";
 
 function App() {
   const ref = useRef();
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const enable = username && password;
 
   useEffect(() => {
     let images = ref.current.querySelectorAll('img'),
@@ -45,15 +51,14 @@ function App() {
           <img className="h-[51px]" alt="" src="https://www.instagram.com/static/images/web/logged_out_wordmark.png/7a252de00b20.png" />
         </a>
         <form className="px-[46px] mt-8 grid gap-y-1.5">
-          <label className="block relative cursor-text">
-            <input type="text" required={true} className="bg-main rounded-sm border text-sm w-full h-9 outline-none focus:border-gray-400 px-1.5 peer valid:pt-3" />
-            <small className="absolute top-1/2 left-2 -translate-y-1/2 text-sm text-gray-400 transition-all peer-valid:text-xs peer-valid:top-2.5">Telefon numarası, kullanıcı adı veya e-posta</small>
-          </label>
-          <label className="block relative cursor-text">
-            <input type="password" required={true} className="bg-main rounded-sm border text-sm w-full h-9 outline-none focus:border-gray-400 px-1.5 peer valid:pt-3" />
-            <small className="absolute top-1/2 left-2 -translate-y-1/2 text-sm text-gray-400 transition-all peer-valid:text-xs peer-valid:top-2.5">Şifre</small>
-          </label>
-          <button type="submit" disabled={true} className="h-[30px] rounded bg-brand text-white">Giriş Yap</button>
+          <Input type="text" value={username} onChange={e => { setUsername(e.target.value) }} label="Telefon numarası, kullanıcı adı veya e-posta" />
+          <Input type="password" value={password} onChange={e => { setPassword(e.target.value) }} label="Şifre" />
+          <button type="submit" disabled={!enable} className="h-[30px] my-[8px] rounded bg-brand text-[14px] text-white font-semibold disabled:opacity-50">Giriş Yap</button>
+          <div className="items-center flex mt-[4px] mb-4">
+            <div className="h-px bg-gray-300 flex-1" />
+            <span className="px-4 text-[13px] font-semibold text-gray-500">YA DA</span>
+            <div className="h-px bg-gray-300 flex-1" />
+          </div>
         </form>
       </div>
     </div>
