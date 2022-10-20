@@ -1,9 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Input } from "./Input";
+import { useDispatch } from "react-redux";
+import { setUser } from "../store/auth";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export const Main = () => {
     const ref = useRef();
-
+    const dispatch = useDispatch();
+    const location = useLocation();
+    const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -15,19 +21,9 @@ export const Main = () => {
             current = 0
 
         const imageSlider = () => {
-            if (current > 0) {
-                images[current - 1].classList.add('opacity-0');
-            }
-            else {
-                images[total - 1].classList.add('opacity-0');
-            }
+            images[(current > 0 ? current : total) - 1].classList.add('opacity-0');
             images[current].classList.remove('opacity-0');
-            if (current === total - 1) {
-                current = 0;
-            }
-            else {
-                current += 1;
-            }
+            current = current === total - 1 ? 0 : current + 1;
         }
         imageSlider();
         const slider = setInterval(imageSlider, 3000);
@@ -35,6 +31,16 @@ export const Main = () => {
             clearInterval(slider);
         }
     }, [ref]);
+
+    const handleSubmit = e => {
+        e.preventDefault();
+        dispatch(setUser({
+            username
+        }))
+        navigate(location.state?.return_url || '/', {
+            replace: true
+        })
+    }
 
     return (
         <div className="h-full w-full flex items-center justify-center pb-[32px] mt-[32px]">
@@ -51,7 +57,7 @@ export const Main = () => {
                     <a href="#" className="flex justify-center mt-12 mb-4">
                         <img className="h-[51px]" alt="" src="https://www.instagram.com/static/images/web/logged_out_wordmark.png/7a252de00b20.png" />
                     </a>
-                    <form className="px-[40px] mt-8 grid gap-y-1.5">
+                    <form onSubmit={handleSubmit} className="px-[40px] mt-8 grid gap-y-1.5">
                         <Input type="text" value={username} onChange={e => { setUsername(e.target.value) }} label="Telefon numarası, kullanıcı adı veya e-posta" />
                         <Input value={password} onChange={e => { setPassword(e.target.value) }} label="Şifre" />
                         <button type="submit" disabled={!enable} className="h-[30px] my-[8px] rounded bg-brand text-[14px] text-white font-semibold disabled:opacity-50">Giriş Yap</button>

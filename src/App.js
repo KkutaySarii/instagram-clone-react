@@ -1,16 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Footer } from "./components/Footer";
-import { Main } from "./components/Main";
+import React from "react";
+import { useRoutes } from "react-router-dom";
+import routes from "./routes";
 
 function App() {
-
-
-  return (
-    <div className="overflow-hidden">
-      <Main />
-      <Footer />
-    </div>
-  );
+  return useRoutes(routes);
 }
 
 export default App;

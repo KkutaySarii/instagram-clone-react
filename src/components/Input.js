@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 
 export const Input = ({ label, ...props }) => {
 
@@ -20,7 +20,7 @@ export const Input = ({ label, ...props }) => {
             <input required={true} type={type} className="bg-zinc-50 text-sm w-full h-12 outline-none px-1.5 peer valid:pt-3" {...props} />
             <small className="absolute top-1/2 left-2 -translate-y-1/2 text-sm text-gray-400 transition-all peer-valid:text-xs peer-valid:top-2.5">{label}</small>
             {isPass === "password" && props?.value && (
-                <button type="button" onClick={() => setShow(show => !show)} className="h-full absolute top-0 right-0 text-sm text-[14px] font-semibold flex items-center pr-[8px]">
+                <button type="button" onClick={() => setShow(show => !show)} className="h-full text-sm text-[14px] font-semibold flex items-center pr-[8px]">
                     {show ? "Gizle" : "Göster"}
                 </button>)}
         </label>
