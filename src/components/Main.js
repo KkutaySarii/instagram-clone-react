@@ -4,16 +4,15 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../store/auth";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { login } from "../my-firebase.js";
+import { Form, Formik } from "formik";
+import * as Yup from 'yup';
 
 export const Main = () => {
     const ref = useRef();
-    const dispatch = useDispatch();
     const location = useLocation();
     const navigate = useNavigate();
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-
-    const enable = username && password;
+    const dispatch = useDispatch();
 
     useEffect(() => {
         let images = ref.current.querySelectorAll('img'),
@@ -32,14 +31,14 @@ export const Main = () => {
         }
     }, [ref]);
 
-    const handleSubmit = e => {
-        e.preventDefault();
-        dispatch(setUser({
-            username
-        }))
-        navigate(location.state?.return_url || '/', {
-            replace: true
-        })
+    const handleSubmit = async (values, actions) => {
+        const res = await login(values.username, values.password);
+        dispatch(setUser(values.username));
+        if (res) {
+            navigate(location.state?.return_url || '/', {
+                replace: true
+            })
+        }
     }
 
     return (
@@ -57,22 +56,36 @@ export const Main = () => {
                     <a href="#" className="flex justify-center mt-12 mb-4">
                         <img className="h-[51px]" alt="" src="https://www.instagram.com/static/images/web/logged_out_wordmark.png/7a252de00b20.png" />
                     </a>
-                    <form onSubmit={handleSubmit} className="px-[40px] mt-8 grid gap-y-1.5">
-                        <Input type="text" value={username} onChange={e => { setUsername(e.target.value) }} label="Telefon numarası, kullanıcı adı veya e-posta" />
-                        <Input value={password} onChange={e => { setPassword(e.target.value) }} label="Şifre" />
-                        <button type="submit" disabled={!enable} className="h-[30px] my-[8px] rounded bg-brand text-[14px] text-white font-semibold disabled:opacity-50">Giriş Yap</button>
-                        <div className="items-center flex mt-[4px] mb-4">
-                            <div className="h-px bg-gray-300 flex-1" />
-                            <span className="px-4 text-[13px] font-semibold text-gray-500">YA DA</span>
-                            <div className="h-px bg-gray-300 flex-1" />
-                        </div>
-                        <div className="justify-center flex">
-                            <button className="items-center flex">
-                                <img className="h-[16px] mr-[8px]" src="https://cdn-icons-png.flaticon.com/512/174/174848.png" />
-                                <span className="text-facebookC text-[14px] font-semibold">Facebook ile giriş yap</span>
-                            </button>
-                        </div>
-                    </form>
+                    <Formik
+                        validationSchema={Yup.object({
+                            username: Yup.string().required("Required"),
+                            password: Yup.string().required("Required")
+                        })}
+                        initialValues={{
+                            username: '',
+                            password: ''
+                        }}
+                        onSubmit={handleSubmit}
+                    >
+                        {({ isSubmitting, isValid, dirty, values }) => (
+                            <Form className="px-[40px] mt-8 grid gap-y-1.5">
+                                <Input type="text" name="username" label="Telefon numarası, kullanıcı adı veya e-posta" />
+                                <Input name="password" label="Şifre" />
+                                <button type="submit" disabled={isSubmitting || !dirty || !isValid} className="h-[30px] my-[8px] rounded bg-brand text-[14px] text-white font-semibold disabled:opacity-50">Giriş Yap</button>
+                                <div className="items-center flex mt-[4px] mb-4">
+                                    <div className="h-px bg-gray-300 flex-1" />
+                                    <span className="px-4 text-[13px] font-semibold text-gray-500">YA DA</span>
+                                    <div className="h-px bg-gray-300 flex-1" />
+                                </div>
+                                <div className="justify-center flex">
+                                    <button className="items-center flex">
+                                        <img className="h-[16px] mr-[8px]" src="https://cdn-icons-png.flaticon.com/512/174/174848.png" />
+                                        <span className="text-facebookC text-[14px] font-semibold">Facebook ile giriş yap</span>
+                                    </button>
+                                </div>
+                            </Form>
+                        )}
+                    </Formik>
                     <div className="justify-center flex my-4">
                         <button className="text-[12px] text-forgetPass">Şifreni mi unuttun?</button>
                     </div>
